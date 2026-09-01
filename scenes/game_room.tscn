@@ -43,6 +43,10 @@ size = Vector2(120, 180)
 atlas = ExtResource("7")
 region = Rect2(80, 32, 16, 16)
 
+[sub_resource type="AtlasTexture" id="atlas_playing"]
+atlas = ExtResource("7")
+region = Rect2(96, 32, 16, 16)
+
 [node name="GameRoom" type="Node2D"]
 script = ExtResource("1")
 

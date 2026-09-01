@@ -48,7 +48,10 @@ func _play_intro_dialogue():
 	if player:
 		player.set_can_move(false)
 		if player.has_method("set_override_texture"):
-			player.set_override_texture(load("res://assets/sprites/player.png"))
+			var atlas = AtlasTexture.new()
+			atlas.atlas = load("res://assets/sprites/player.png")
+			atlas.region = Rect2(80, 32, 16, 16)
+			player.set_override_texture(atlas)
 	if dialogue_manager:
 		var intro = [
 			{"speaker": "Jugador", "text": "Creo que ya jugué mucho... debo dormir aunque no quiera."},
@@ -244,10 +247,17 @@ func _start_punishment_minigame():
 
 func _on_taunt_finished():
 	if snake_minigame:
+		if player and player.has_method("set_override_texture"):
+			var atlas = AtlasTexture.new()
+			atlas.atlas = load("res://assets/sprites/player.png")
+			atlas.region = Rect2(96, 32, 16, 16)
+			player.set_override_texture(atlas)
 		snake_minigame.start_snake_game()
 
 func _on_snake_completed(success: bool):
 	if player:
+		if player.has_method("clear_override"):
+			player.clear_override()
 		player.set_can_move(true)
 	GameManager.first_snake_completed = true
 	var window_node = get_node_or_null("Window")
