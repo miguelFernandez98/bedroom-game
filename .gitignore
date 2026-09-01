@@ -1,0 +1,13 @@
+# Godot 4
+.godot/
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/

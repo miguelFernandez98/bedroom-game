@@ -1,0 +1,179 @@
+{
+  "opening": [
+    {
+      "speaker": "???",
+      "text": "Asi que... quieres dormir, eh?"
+    },
+    {
+      "speaker": "Cama",
+      "text": "Jajaja... como si fuera tan facil."
+    },
+    {
+      "speaker": "Cama",
+      "text": "Para acostarte en mi, primero tienes que demostrarte que te lo mereces."
+    },
+    {
+      "speaker": "Cama",
+      "text": "Vamos a hacer unas preguntitas... nada personal."
+    },
+    {
+      "speaker": "Cama",
+      "text": "O mejor dicho... quiero ver si de verdad crees que puedes con esto."
+    }
+  ],
+  "questions": [
+    {
+      "speaker": "Cama",
+      "text": "Primera pregunta... ¿Crees que mereces descansar?",
+      "choices": [
+        {
+          "text": "Si, lo merezco",
+          "value": 2,
+          "response": "Hm... interesante. Al menos tu crees eso."
+        },
+        {
+          "text": "No lo se",
+          "value": 1,
+          "response": "No lo sabes? Que patetico. Siguiente."
+        },
+        {
+          "text": "No, no lo merezco",
+          "value": 0,
+          "response": "JAJAJA! ni tu mismo crees en ti. Mira como se cierra la habitacion..."
+        }
+      ],
+      "positive_value": 2,
+      "negative_value": 0
+    },
+    {
+      "speaker": "Cama",
+      "text": "Segunda pregunta... ¿Crees que puedes con tus problemas?",
+      "choices": [
+        {
+          "text": "Si, puedo con ellos",
+          "value": 2,
+          "response": "Que bonito... pero el mundo no te va a tender la mano."
+        },
+        {
+          "text": "Es muy dificil",
+          "value": 1,
+          "response": "Dificil? Todo es dificil para los debiles."
+        },
+        {
+          "text": "No puedo con nada",
+          "value": 0,
+          "response": "Lo sabia. Mirate, ni para dormir sirves."
+        }
+      ],
+      "positive_value": 2,
+      "negative_value": 0
+    },
+    {
+      "speaker": "Cama",
+      "text": "Tercera pregunta... ¿Pedirias ayuda si la necesitaras?",
+      "choices": [
+        {
+          "text": "Si, sin dudarlo",
+          "value": 2,
+          "response": "Pedir ayuda... que tierno. A veces eso es todo lo que necesitas."
+        },
+        {
+          "text": "Depende de quien sea",
+          "value": 1,
+          "response": "Depende? Cuando estas en el fondo, no te importa quien te ayude."
+        },
+        {
+          "text": "Nunca, soy debil si lo hago",
+          "value": 0,
+          "response": "JAJAJA! pedir ayuda no es debilidad, burro. Pero ya es tarde para ti."
+        }
+      ],
+      "positive_value": 2,
+      "negative_value": 0
+    },
+    {
+      "speaker": "Cama",
+      "text": "Ultima pregunta facil... ¿Y si fallas, que haces?",
+      "choices": [
+        {
+          "text": "Intento de nuevo",
+          "value": 2,
+          "response": "Intentar de nuevo... eso suena a alguien que no se rinde."
+        },
+        {
+          "text": "Me frustro y me rindo",
+          "value": 1,
+          "response": "Frustarse es normal. Rendirse es tu problema."
+        },
+        {
+          "text": "Me rindo, no tiene caso",
+          "value": 0,
+          "response": "Como siempre... rendirse es lo unico que sabes hacer."
+        }
+      ],
+      "positive_value": 2,
+      "negative_value": 0
+    },
+    {
+      "speaker": "Cama",
+      "text": "Ultima pregunta... la dificil...",
+      "special": "final",
+      "question": "Sabes cual es la diferencia entre rendirse y descansar? A veces, lo que sientes como derrota, solo es tu cuerpo pidiendo que intentes de otra forma. No necesitas ser perfecto, solo necesitas intentarlo.\n\nEntiendes que intentar ya es ganar?",
+      "choices": [
+        {
+          "text": "Si, intentar ya es suficiente",
+          "value": 3,
+          "response": "Entonces... puedes dormir. Buenas noches, valiente."
+        },
+        {
+          "text": "Pero y si fallo otra vez...",
+          "value": 1,
+          "response": "Y si fallas? Pues lo intentas otra vez. Eso es todo. No hay secreto."
+        },
+        {
+          "text": "No entiendo...",
+          "value": 0,
+          "response": "No entiendes? Mira la pared... ya no hay donde ir."
+        }
+      ],
+      "positive_value": 3,
+      "negative_value": 0
+    }
+  ],
+  "victory": [
+    {
+      "speaker": "Cama",
+      "text": "Bueno... ganaste. Te mereces dormir."
+    },
+    {
+      "speaker": "Cama",
+      "text": "Recuerda: no necesitas ser perfecto. Solo necesitas intentarlo."
+    },
+    {
+      "speaker": "Sistema",
+      "text": "FELICIDADES! Has completado el juego."
+    },
+    {
+      "speaker": "Sistema",
+      "text": "Moraleja: Intentar ya es ganar. No importa cuantas veces falles, lo importante es que sigas intentando."
+    }
+  ],
+  "game_over": [
+    {
+      "speaker": "Cama",
+      "text": "JAJAJA! No pudiste ni responder una pregunta."
+    },
+    {
+      "speaker": "Cama",
+      "text": "La habitacion se cierra... y tu te quedas ahi, perdido en tus pensamientos."
+    },
+    {
+      "speaker": "Sistema",
+      "text": "GAME OVER - La habitacion se ha cerrado completamente."
+    },
+    {
+      "speaker": "Sistema",
+      "text": "Presiona R para reiniciar o ESC para salir."
+    }
+  ]
+}
