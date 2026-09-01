@@ -60,19 +60,19 @@ region = Rect2(32, 48, 16, 16)
 
 [sub_resource type="AtlasTexture" id="atlas_idle_right_0"]
 atlas = ExtResource("1")
-region = Rect2(0, 64, 16, 16)
+region = Rect2(0, 96, 16, 16)
 
 [sub_resource type="AtlasTexture" id="atlas_idle_right_1"]
 atlas = ExtResource("1")
-region = Rect2(16, 64, 16, 16)
+region = Rect2(16, 96, 16, 16)
 
 [sub_resource type="AtlasTexture" id="atlas_idle_right_2"]
 atlas = ExtResource("1")
-region = Rect2(32, 64, 16, 16)
+region = Rect2(32, 96, 16, 16)
 
 [sub_resource type="AtlasTexture" id="atlas_idle_right_3"]
 atlas = ExtResource("1")
-region = Rect2(48, 64, 16, 16)
+region = Rect2(48, 96, 16, 16)
 
 [sub_resource type="AtlasTexture" id="atlas_walk_right_0"]
 atlas = ExtResource("1")
@@ -88,19 +88,19 @@ region = Rect2(32, 80, 16, 16)
 
 [sub_resource type="AtlasTexture" id="atlas_idle_up_0"]
 atlas = ExtResource("1")
-region = Rect2(0, 96, 16, 16)
+region = Rect2(0, 64, 16, 16)
 
 [sub_resource type="AtlasTexture" id="atlas_idle_up_1"]
 atlas = ExtResource("1")
-region = Rect2(16, 96, 16, 16)
+region = Rect2(16, 64, 16, 16)
 
 [sub_resource type="AtlasTexture" id="atlas_idle_up_2"]
 atlas = ExtResource("1")
-region = Rect2(32, 96, 16, 16)
+region = Rect2(32, 64, 16, 16)
 
 [sub_resource type="AtlasTexture" id="atlas_idle_up_3"]
 atlas = ExtResource("1")
-region = Rect2(48, 96, 16, 16)
+region = Rect2(48, 64, 16, 16)
 
 [sub_resource type="AtlasTexture" id="atlas_walk_up_0"]
 atlas = ExtResource("1")

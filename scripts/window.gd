@@ -8,9 +8,8 @@ var normal_color: Color = Color(1, 1, 1)
 var red_color: Color = Color(0.8, 0.1, 0.1)
 var is_red: bool = false
 var showing_stars: bool = true
-var star_positions: Array = []
-var star_alphas: Array = []
-var star_count: int = 6
+var star_nodes: Array = []
+var star_count: int = 8
 
 func _ready():
 	eye_left.visible = false
@@ -20,15 +19,6 @@ func _ready():
 func _process(_delta):
 	if showing_stars:
 		_animate_stars()
-		queue_redraw()
-
-func _draw():
-	if not showing_stars:
-		return
-	for i in range(star_positions.size()):
-		var pos = star_positions[i]
-		var alpha = star_alphas[i]
-		draw_circle(pos, 1.0, Color(0.878, 0.878, 0.776, alpha))
 
 func _on_timer_timeout():
 	if showing_stars:
@@ -52,23 +42,32 @@ func _set_eyes_color(color: Color):
 
 func show_eyes():
 	showing_stars = false
+	for star in star_nodes:
+		star.queue_free()
+	star_nodes.clear()
 	eye_left.visible = true
 	eye_right.visible = true
 	_set_eyes_color(normal_color)
-	queue_redraw()
 	timer.wait_time = randf_range(2.0, 4.0)
 	timer.start()
 
 func _generate_stars():
-	star_positions.clear()
-	star_alphas.clear()
+	for star in star_nodes:
+		star.queue_free()
+	star_nodes.clear()
 	for i in range(star_count):
-		var x = randf_range(-34.0, 34.0)
-		var y = randf_range(-8.0, 8.0)
-		star_positions.append(Vector2(x, y))
-		star_alphas.append(randf_range(0.2, 0.8))
+		var star = ColorRect.new()
+		star.color = Color(0.878, 0.878, 0.776, randf_range(0.3, 0.9))
+		star.offset_left = randf_range(-34.0, 34.0)
+		star.offset_top = randf_range(-8.0, 8.0)
+		star.offset_right = star.offset_left + 1.5
+		star.offset_bottom = star.offset_top + 1.5
+		add_child(star)
+		star_nodes.append(star)
 
 func _animate_stars():
-	for i in range(star_alphas.size()):
-		star_alphas[i] += randf_range(-0.15, 0.15)
-		star_alphas[i] = clampf(star_alphas[i], 0.05, 0.9)
+	for star in star_nodes:
+		var c = star.color
+		c.a += randf_range(-0.08, 0.08)
+		c.a = clampf(c.a, 0.05, 0.95)
+		star.color = c
