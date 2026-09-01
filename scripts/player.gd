@@ -5,6 +5,8 @@ const SPEED = 80.0
 var facing_direction: String = "down"
 var is_moving: bool = false
 var can_move: bool = true
+var override_sprite: Texture2D = null
+var default_scale: Vector2 = Vector2(3, 3)
 
 @onready var sprite: AnimatedSprite2D = $Sprite2D
 
@@ -15,7 +17,14 @@ func _ready():
 func _physics_process(_delta: float):
 	if not can_move:
 		velocity = Vector2.ZERO
+		if override_sprite:
+			sprite.visible = false
+		else:
+			sprite.visible = true
 		return
+	
+	sprite.visible = true
+	override_sprite = null
 	
 	var input_dir := Vector2.ZERO
 	
@@ -41,6 +50,17 @@ func _physics_process(_delta: float):
 		_play_idle_animation()
 	
 	move_and_slide()
+
+func set_override_sprite(tex: Texture2D):
+	override_sprite = tex
+	if override_sprite:
+		sprite.visible = false
+	else:
+		sprite.visible = true
+
+func clear_override():
+	override_sprite = null
+	sprite.visible = true
 
 func _update_facing(dir: Vector2):
 	if dir.x == 0 and dir.y < 0:

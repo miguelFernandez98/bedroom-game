@@ -22,6 +22,9 @@ var max_shrink: int = 5
 var shrink_amount: float = 32.0
 var base_pitch: float = 1.0
 var pending_minigame: bool = false
+var consecutive_positive: int = 0
+var forced_snake_pending: bool = false
+var audio_manager: Node = null
 
 func _ready():
 	add_to_group("room_controller")
@@ -32,6 +35,10 @@ func _ready():
 	if has_node("SnakeMinigame"):
 		snake_minigame = $SnakeMinigame
 		snake_minigame.snake_game_completed.connect(_on_snake_completed)
+	
+	audio_manager = get_node_or_null("AudioManager")
+	if audio_manager:
+		audio_manager.setup($BackgroundMusic, $HUD/MuteButton, dialogue_manager)
 	
 	_save_original_positions()
 	_init_questions()
@@ -116,6 +123,7 @@ func _init_questions():
 
 func start_questions():
 	current_question_index = 0
+	consecutive_positive = 0
 	_show_question()
 
 func _show_question():
@@ -152,10 +160,16 @@ func _on_answer_selected(value: int, q: Dictionary):
 	var correct = value >= q["positive_value"]
 	
 	if correct:
+		consecutive_positive += 1
 		GameManager.add_positive_answer()
 	else:
+		consecutive_positive = 0
 		GameManager.add_negative_answer()
 		_shrink_room()
+		pending_minigame = true
+	
+	if consecutive_positive >= 2 and not forced_snake_pending:
+		forced_snake_pending = true
 		pending_minigame = true
 	
 	question_answered.emit(correct)
@@ -181,12 +195,36 @@ func _on_final_answer_selected(value: int):
 func _on_dialogue_closed():
 	if pending_minigame:
 		pending_minigame = false
-		_start_punishment_minigame()
+		if forced_snake_pending:
+			forced_snake_pending = false
+			_start_forced_minigame()
+		else:
+			_start_punishment_minigame()
+	else:
+		_show_question()
+
+func _start_forced_minigame():
+	if snake_minigame:
+		if audio_manager and audio_manager.has_method("start_punishment_volume"):
+			audio_manager.start_punishment_volume()
+		if player:
+			player.set_can_move(false)
+		if dialogue_manager:
+			var taunt = [
+				{"speaker": "Cama", "text": "Sabes qué? Eres demasiado correcto. Me aburres."},
+				{"speaker": "Cama", "text": "Nadie es tan perfecto. O mientes o no tienes personalidad."},
+				{"speaker": "Cama", "text": "Vamos a jugar algo más divertido. Si ganas, tal vez te deje dormir."},
+				{"speaker": "Cama", "text": "Come las manzanas sin chocar. ¡Y no me decepciones!"}
+			]
+			dialogue_manager.start_dialogue(taunt)
+			dialogue_manager.dialogue_finished.connect(_on_taunt_finished, CONNECT_ONE_SHOT)
 	else:
 		_show_question()
 
 func _start_punishment_minigame():
 	if snake_minigame:
+		if audio_manager and audio_manager.has_method("start_punishment_volume"):
+			audio_manager.start_punishment_volume()
 		if player:
 			player.set_can_move(false)
 		if dialogue_manager:
@@ -207,6 +245,12 @@ func _on_taunt_finished():
 func _on_snake_completed(success: bool):
 	if player:
 		player.set_can_move(true)
+	GameManager.first_snake_completed = true
+	var window_node = get_node_or_null("Window")
+	if window_node and window_node.has_method("show_eyes"):
+		window_node.show_eyes()
+	if audio_manager and audio_manager.has_method("stop_punishment_volume"):
+		audio_manager.stop_punishment_volume()
 	if success:
 		if dialogue_manager:
 			dialogue_manager.start_dialogue([

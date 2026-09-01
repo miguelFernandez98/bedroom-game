@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://gameroom001"]
+[gd_scene load_steps=11 format=3 uid="uid://gameroom001"]
 
 [ext_resource type="Script" path="res://scripts/room_controller.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/bed.gd" id="2"]
@@ -8,6 +8,7 @@
 [ext_resource type="SpriteFrames" path="res://assets/sprites/player.tres" id="6"]
 [ext_resource type="Texture2D" path="res://assets/sprites/player.png" id="7"]
 [ext_resource type="Script" path="res://scripts/window.gd" id="8"]
+[ext_resource type="Script" path="res://scripts/audio_manager.gd" id="9"]
 
 [sub_resource type="AtlasTexture" id="bed_closed"]
 atlas = ExtResource("7")
@@ -87,17 +88,17 @@ offset_bottom = 10.0
 color = Color(0.039, 0.118, 0.078, 1)
 
 [node name="EyeLeft" type="ColorRect" parent="Window"]
-offset_left = -24.0
-offset_top = -4.0
-offset_right = -16.0
-offset_bottom = 4.0
+offset_left = -18.0
+offset_top = -2.0
+offset_right = -14.0
+offset_bottom = 2.0
 color = Color(1, 1, 1, 1)
 
 [node name="EyeRight" type="ColorRect" parent="Window"]
-offset_left = 16.0
-offset_top = -4.0
-offset_right = 24.0
-offset_bottom = 4.0
+offset_left = 14.0
+offset_top = -2.0
+offset_right = 18.0
+offset_bottom = 2.0
 color = Color(1, 1, 1, 1)
 
 [node name="WindowTimer" type="Timer" parent="Window"]
@@ -206,7 +207,23 @@ theme_override_colors/font_color = Color(0.878, 0.878, 0.776, 0.7)
 text = "R = Reiniciar"
 horizontal_alignment = 2
 
+[node name="MuteButton" type="Button" parent="HUD"]
+offset_left = 420.0
+offset_top = 4.0
+offset_right = 460.0
+offset_bottom = 20.0
+theme_override_font_sizes/font_size = 10
+theme_override_colors/font_color = Color(0.878, 0.878, 0.776, 1)
+theme_override_colors/font_hover_color = Color(0.945, 0.769, 0.059, 1)
+text = "♪ ON"
+
+[node name="BackgroundMusic" type="AudioStreamPlayer" parent="."]
+bus = "Master"
+
 [node name="SnakeMinigame" parent="." instance=ExtResource("5")]
+
+[node name="AudioManager" type="Node" parent="."]
+script = ExtResource("9")
 
 [node name="DialogueBox" parent="." instance=ExtResource("4")]
 
