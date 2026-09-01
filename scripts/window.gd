@@ -14,7 +14,6 @@ var star_phase: int = 0
 func _ready():
 	eye_left.visible = false
 	eye_right.visible = false
-	timer.timeout.connect(_on_timer_timeout)
 
 func _process(_delta):
 	if showing_stars:

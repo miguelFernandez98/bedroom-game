@@ -47,6 +47,8 @@ func _ready():
 func _play_intro_dialogue():
 	if player:
 		player.set_can_move(false)
+		if player.has_method("set_override_texture"):
+			player.set_override_texture(load("res://assets/sprites/player.png"))
 	if dialogue_manager:
 		var intro = [
 			{"speaker": "Jugador", "text": "Creo que ya jugué mucho... debo dormir aunque no quiera."},
@@ -58,6 +60,8 @@ func _play_intro_dialogue():
 
 func _on_intro_finished():
 	if player:
+		if player.has_method("clear_override"):
+			player.clear_override()
 		player.set_can_move(true)
 
 func _input(event):
