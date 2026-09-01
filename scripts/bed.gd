@@ -8,12 +8,17 @@ var e_held: bool = false
 var bed_solid: StaticBody2D = null
 var window_position: Vector2 = Vector2(240, 16)
 var push_reached_window: bool = false
+var cooldown: float = 0.0
 
 func _ready():
 	add_to_group("bed")
 	bed_solid = get_parent().get_node_or_null("BedSolid")
 
 func _process(delta):
+	if cooldown > 0:
+		cooldown -= delta
+		return
+	
 	if push_reached_window:
 		return
 	
@@ -48,6 +53,8 @@ func _get_player():
 	return get_tree().get_first_node_in_group("player")
 
 func _input(event):
+	if cooldown > 0:
+		return
 	if not is_player_near:
 		return
 	if not can_interact:
@@ -144,6 +151,7 @@ func _try_sleep():
 		dm.dialogue_finished.connect(_on_opening_finished, CONNECT_ONE_SHOT)
 
 func _on_opening_finished():
+	cooldown = 0.5
 	var p = _get_player()
 	if p:
 		p.set_can_move(true)

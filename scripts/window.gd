@@ -6,22 +6,33 @@ extends Node2D
 
 var normal_color: Color = Color(1, 1, 1)
 var red_color: Color = Color(0.8, 0.1, 0.1)
-var star_color: Color = Color(0.878, 0.878, 0.776, 0.6)
 var is_red: bool = false
 var showing_stars: bool = true
-var star_phase: int = 0
+var star_positions: Array = []
+var star_alphas: Array = []
+var star_count: int = 6
 
 func _ready():
 	eye_left.visible = false
 	eye_right.visible = false
+	_generate_stars()
 
 func _process(_delta):
 	if showing_stars:
 		_animate_stars()
+		queue_redraw()
+
+func _draw():
+	if not showing_stars:
+		return
+	for i in range(star_positions.size()):
+		var pos = star_positions[i]
+		var alpha = star_alphas[i]
+		draw_circle(pos, 1.0, Color(0.878, 0.878, 0.776, alpha))
 
 func _on_timer_timeout():
 	if showing_stars:
-		timer.wait_time = randf_range(1.0, 2.5)
+		timer.wait_time = randf_range(0.8, 2.0)
 		timer.start()
 		return
 	
@@ -44,20 +55,20 @@ func show_eyes():
 	eye_left.visible = true
 	eye_right.visible = true
 	_set_eyes_color(normal_color)
+	queue_redraw()
 	timer.wait_time = randf_range(2.0, 4.0)
 	timer.start()
 
+func _generate_stars():
+	star_positions.clear()
+	star_alphas.clear()
+	for i in range(star_count):
+		var x = randf_range(-34.0, 34.0)
+		var y = randf_range(-8.0, 8.0)
+		star_positions.append(Vector2(x, y))
+		star_alphas.append(randf_range(0.2, 0.8))
+
 func _animate_stars():
-	star_phase = (star_phase + 1) % 3
-	match star_phase:
-		0:
-			eye_left.color = Color(0.878, 0.878, 0.776, 0.3)
-			eye_right.color = Color(0.878, 0.878, 0.776, 0.1)
-		1:
-			eye_left.color = Color(0.878, 0.878, 0.776, 0.1)
-			eye_right.color = Color(0.878, 0.878, 0.776, 0.6)
-		2:
-			eye_left.color = Color(0.878, 0.878, 0.776, 0.6)
-			eye_right.color = Color(0.878, 0.878, 0.776, 0.3)
-	eye_left.visible = true
-	eye_right.visible = true
+	for i in range(star_alphas.size()):
+		star_alphas[i] += randf_range(-0.15, 0.15)
+		star_alphas[i] = clampf(star_alphas[i], 0.05, 0.9)

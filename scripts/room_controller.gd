@@ -66,6 +66,9 @@ func _on_intro_finished():
 		if player.has_method("clear_override"):
 			player.clear_override()
 		player.set_can_move(true)
+	var bed = get_tree().get_first_node_in_group("bed")
+	if bed:
+		bed.cooldown = 0.5
 
 func _input(event):
 	if event.is_action_pressed("restart"):
