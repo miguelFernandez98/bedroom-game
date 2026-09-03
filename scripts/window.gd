@@ -10,6 +10,7 @@ var is_red: bool = false
 var showing_stars: bool = true
 var star_nodes: Array = []
 var star_count: int = 8
+var stars_forced_red: bool = false
 
 func _ready():
 	eye_left.visible = false
@@ -26,7 +27,7 @@ func _on_timer_timeout():
 		timer.start()
 		return
 	
-	if randf() < 0.3:
+	if not stars_forced_red and randf() < 0.3:
 		is_red = true
 		_set_eyes_color(red_color)
 		await get_tree().create_timer(0.5).timeout
@@ -51,6 +52,16 @@ func show_eyes():
 	timer.wait_time = randf_range(2.0, 4.0)
 	timer.start()
 
+func set_stars_red():
+	stars_forced_red = true
+	for star in star_nodes:
+		star.color = Color(0.8, 0.1, 0.1, star.color.a)
+
+func set_stars_normal():
+	stars_forced_red = false
+	for star in star_nodes:
+		star.color = Color(0.878, 0.878, 0.776, star.color.a)
+
 func _generate_stars():
 	for star in star_nodes:
 		star.queue_free()
@@ -67,7 +78,13 @@ func _generate_stars():
 
 func _animate_stars():
 	for star in star_nodes:
-		var c = star.color
-		c.a += randf_range(-0.08, 0.08)
-		c.a = clampf(c.a, 0.05, 0.95)
-		star.color = c
+		if stars_forced_red:
+			star.color = Color(0.8, 0.1, 0.1, clampf(star.color.a + randf_range(-0.08, 0.08), 0.05, 0.95))
+		else:
+			var c = star.color
+			c.r = 0.878
+			c.g = 0.878
+			c.b = 0.776
+			c.a += randf_range(-0.08, 0.08)
+			c.a = clampf(c.a, 0.05, 0.95)
+			star.color = c

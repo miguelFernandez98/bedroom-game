@@ -2,6 +2,7 @@ extends Area2D
 
 var is_player_near: bool = false
 var can_interact: bool = true
+var push_enabled: bool = true
 var interact_range: float = 90.0
 var is_pushing: bool = false
 var e_held: bool = false
@@ -30,24 +31,28 @@ func _process(delta):
 		_process_push(delta)
 		return
 	
-	if not can_interact:
+	if not can_interact and not push_enabled:
 		return
+	
 	var p = _get_player()
 	if not p:
 		return
 	var dist = global_position.distance_to(p.global_position)
 	var was_near = is_player_near
 	is_player_near = dist < interact_range
+	
 	if is_player_near and not was_near:
 		var dm = _get_dm()
-		if dm:
+		if dm and push_enabled:
+			dm.show_interact_prompt("[E] Empujar cama")
+		elif dm:
 			dm.show_interact_prompt()
 	elif not is_player_near and was_near:
 		var dm = _get_dm()
 		if dm:
 			dm.hide_interact_prompt()
 	
-	if e_held and is_player_near and can_interact and not is_pushing:
+	if e_held and is_player_near and push_enabled and not is_pushing:
 		if p.is_moving:
 			is_pushing = true
 			var dm = _get_dm()
@@ -72,16 +77,14 @@ func _input(event):
 		return
 	if not is_player_near:
 		return
-	if not can_interact:
-		return
 	if event.is_action_pressed("interact"):
 		e_held = true
+		if can_interact and not is_pushing:
+			_try_sleep()
 	elif event.is_action_released("interact"):
 		e_held = false
 		if is_pushing:
 			is_pushing = false
-		elif can_interact and is_player_near:
-			_try_sleep()
 
 func _process_push(_delta):
 	var p = _get_player()
@@ -117,6 +120,7 @@ func _process_push(_delta):
 func _trigger_window_ending():
 	push_reached_window = true
 	can_interact = false
+	push_enabled = false
 	e_held = false
 	is_pushing = false
 	
@@ -149,29 +153,6 @@ func _try_sleep():
 	var dm = _get_dm()
 	if dm:
 		dm.hide_interact_prompt()
-	
-	var p = _get_player()
-	if p:
-		p.set_can_move(false)
-	
-	if dm:
-		var opening = [
-			{"speaker": "Cama", "text": "¿Quieres dormir? Ja ja ja... no tan rápido."},
-			{"speaker": "Cama", "text": "No puedes simplemente acostarte. Primero tienes que responder algunas preguntas."},
-			{"speaker": "Cama", "text": "Si respondes bien, podrás dormir. Si no... bueno, ya veremos."},
-			{"speaker": "Cama", "text": "¿Estás listo? Empecemos."}
-		]
-		dm.start_dialogue(opening)
-		dm.dialogue_finished.connect(_on_opening_finished, CONNECT_ONE_SHOT)
-
-func _on_opening_finished():
-	cooldown = 2.0
-	_dialogue_just_ended = true
-	var p = _get_player()
-	if p:
-		p.set_can_move(true)
 	var rc = _get_rc()
 	if rc:
-		rc.start_questions()
-	await get_tree().create_timer(2.0).timeout
-	_dialogue_just_ended = false
+		rc.start_bed_dialogue()

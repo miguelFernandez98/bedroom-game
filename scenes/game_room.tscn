@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://gameroom001"]
+[gd_scene load_steps=12 format=3 uid="uid://gameroom001"]
 
 [ext_resource type="Script" path="res://scripts/room_controller.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/bed.gd" id="2"]
@@ -9,6 +9,7 @@
 [ext_resource type="Texture2D" path="res://assets/sprites/player.png" id="7"]
 [ext_resource type="Script" path="res://scripts/window.gd" id="8"]
 [ext_resource type="Script" path="res://scripts/audio_manager.gd" id="9"]
+[ext_resource type="PackedScene" uid="uid://chair001" path="res://scenes/hot_chair_minigame.tscn" id="10"]
 
 [sub_resource type="AtlasTexture" id="bed_closed"]
 atlas = ExtResource("7")
@@ -234,6 +235,8 @@ text = "♪ ON"
 bus = "Master"
 
 [node name="SnakeMinigame" parent="." instance=ExtResource("5")]
+
+[node name="HotChairMinigame" parent="." instance=ExtResource("10")]
 
 [node name="AudioManager" type="Node" parent="."]
 script = ExtResource("9")
