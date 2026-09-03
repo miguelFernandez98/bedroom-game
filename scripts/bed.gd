@@ -10,7 +10,6 @@ var bed_solid: StaticBody2D = null
 var window_position: Vector2 = Vector2(240, 16)
 var push_reached_window: bool = false
 var cooldown: float = 0.0
-var _dialogue_just_ended: bool = false
 
 func _ready():
 	add_to_group("bed")
@@ -19,9 +18,6 @@ func _ready():
 func _process(delta):
 	if cooldown > 0:
 		cooldown -= delta
-		return
-	
-	if _dialogue_just_ended:
 		return
 	
 	if push_reached_window:
@@ -37,6 +33,12 @@ func _process(delta):
 	var p = _get_player()
 	if not p:
 		return
+	
+	var rc = _get_rc()
+	if rc and rc.current_state != rc.GameState.IDLE:
+		is_player_near = false
+		return
+	
 	var dist = global_position.distance_to(p.global_position)
 	var was_near = is_player_near
 	is_player_near = dist < interact_range
@@ -71,16 +73,17 @@ func _get_player():
 func _input(event):
 	if cooldown > 0:
 		return
-	if _dialogue_just_ended:
-		if event.is_action_pressed("interact"):
-			_dialogue_just_ended = false
+	if push_reached_window:
 		return
 	if not is_player_near:
 		return
+	
 	if event.is_action_pressed("interact"):
 		e_held = true
 		if can_interact and not is_pushing:
-			_try_sleep()
+			var rc = _get_rc()
+			if rc and rc.current_state == rc.GameState.IDLE:
+				_try_sleep()
 	elif event.is_action_released("interact"):
 		e_held = false
 		if is_pushing:
@@ -150,6 +153,7 @@ func _on_ending_finished():
 
 func _try_sleep():
 	can_interact = false
+	push_enabled = false
 	var dm = _get_dm()
 	if dm:
 		dm.hide_interact_prompt()

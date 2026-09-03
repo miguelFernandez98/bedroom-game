@@ -71,6 +71,8 @@ func _change_state(new_state: GameState):
 			_play_intro_dialogue()
 		GameState.IDLE:
 			if player:
+				if player.has_method("clear_override"):
+					player.clear_override()
 				player.set_can_move(true)
 			var bed = get_tree().get_first_node_in_group("bed")
 			if bed:
@@ -331,6 +333,9 @@ func _on_snake_completed(success: bool):
 		window_node.show_eyes()
 	if audio_manager and audio_manager.has_method("stop_punishment_volume"):
 		audio_manager.stop_punishment_volume()
+	if dialogue_manager:
+		if dialogue_manager.dialogue_finished.is_connected(_on_snake_result):
+			dialogue_manager.dialogue_finished.disconnect(_on_snake_result)
 	if success:
 		if dialogue_manager:
 			dialogue_manager.start_dialogue([
@@ -385,6 +390,9 @@ func _on_chair_completed(success: bool):
 		window_node.set_stars_normal()
 	if audio_manager and audio_manager.has_method("stop_punishment_volume"):
 		audio_manager.stop_punishment_volume()
+	if dialogue_manager:
+		if dialogue_manager.dialogue_finished.is_connected(_on_chair_result):
+			dialogue_manager.dialogue_finished.disconnect(_on_chair_result)
 	if success:
 		if dialogue_manager:
 			dialogue_manager.start_dialogue([

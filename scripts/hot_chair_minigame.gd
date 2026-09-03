@@ -12,7 +12,6 @@ var clone_wins: int = 0
 var max_rounds: int = 3
 var clone_speed: float = 60.0
 var clone_target: Vector2 = Vector2.ZERO
-var bed_label: Label = null
 
 func _ready():
 	$CanvasLayer.visible = false
@@ -28,21 +27,14 @@ func start_chair_game():
 	clone_node.name = "Clone"
 	add_child(clone_node)
 	
-	var clone_body = ColorRect.new()
-	clone_body.color = Color(0.8, 0.2, 0.2)
-	clone_body.offset_left = -6.0
-	clone_body.offset_top = -8.0
-	clone_body.offset_right = 6.0
-	clone_body.offset_bottom = 8.0
-	clone_node.add_child(clone_body)
-	
-	var clone_head = ColorRect.new()
-	clone_head.color = Color(0.9, 0.3, 0.3)
-	clone_head.offset_left = -4.0
-	clone_head.offset_top = -14.0
-	clone_head.offset_right = 4.0
-	clone_head.offset_bottom = -8.0
-	clone_node.add_child(clone_head)
+	var sprite = AnimatedSprite2D.new()
+	sprite.name = "Sprite"
+	var sf = load("res://assets/sprites/player.tres")
+	sprite.sprite_frames = sf
+	sprite.animation = &"idle_down"
+	sprite.scale = Vector2(3, 3)
+	sprite.modulate = Color(1.0, 0.2, 0.2)
+	clone_node.add_child(sprite)
 	
 	clone_node.position = Vector2(240, 16)
 	clone_node.visible = false
@@ -58,6 +50,8 @@ func _start_round():
 	
 	if player_node:
 		player_node.set_can_move(false)
+		if player_node.has_method("clear_override"):
+			player_node.clear_override()
 		player_node.position = Vector2(240, 350)
 		await get_tree().create_timer(0.5).timeout
 		player_node.set_can_move(true)
@@ -92,8 +86,8 @@ func _process(delta):
 		var dir = (clone_target - clone_node.position).normalized()
 		clone_node.position += dir * clone_speed * delta
 	
-	if bed_node:
-		var player_dist = player_node.position.distance_to(bed_node.position) if player_node else 999
+	if bed_node and player_node:
+		var player_dist = player_node.position.distance_to(bed_node.position)
 		var clone_dist = clone_node.position.distance_to(bed_node.position)
 		
 		if player_dist < 20.0:
@@ -102,12 +96,15 @@ func _process(delta):
 			_end_round(false)
 
 func _end_round(player_won: bool):
+	if not is_active:
+		return
+	
 	if player_won:
 		player_wins += 1
 	else:
 		clone_wins += 1
 	
-	$CanvasLayer/ScoreLabel.text = "Tú: %d | Clon: %d" % [player_wins, clone_wins]
+	$CanvasLayer/ScoreLabel.text = "Tu: %d | Clon: %d" % [player_wins, clone_wins]
 	$CanvasLayer/ScoreLabel.visible = true
 	
 	if player_node:
@@ -118,6 +115,9 @@ func _end_round(player_won: bool):
 	await get_tree().create_timer(1.5).timeout
 	$CanvasLayer/ScoreLabel.visible = false
 	
+	if not is_active:
+		return
+	
 	if player_wins >= 2:
 		_end_game(true)
 	elif clone_wins >= 2:
@@ -126,6 +126,8 @@ func _end_round(player_won: bool):
 		_start_round()
 
 func _end_game(success: bool):
+	if not is_active:
+		return
 	is_active = false
 	$CanvasLayer.visible = false
 	
@@ -143,4 +145,4 @@ func _get_random_bed_position() -> Vector2:
 
 func _update_hud():
 	$CanvasLayer/RoundLabel.text = "Ronda %d" % round_number
-	$CanvasLayer/ScoreLabel.text = "Tú: %d | Clon: %d" % [player_wins, clone_wins]
+	$CanvasLayer/ScoreLabel.text = "Tu: %d | Clon: %d" % [player_wins, clone_wins]
