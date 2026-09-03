@@ -9,6 +9,7 @@ var bed_solid: StaticBody2D = null
 var window_position: Vector2 = Vector2(240, 16)
 var push_reached_window: bool = false
 var cooldown: float = 0.0
+var _dialogue_just_ended: bool = false
 
 func _ready():
 	add_to_group("bed")
@@ -17,6 +18,9 @@ func _ready():
 func _process(delta):
 	if cooldown > 0:
 		cooldown -= delta
+		return
+	
+	if _dialogue_just_ended:
 		return
 	
 	if push_reached_window:
@@ -42,6 +46,13 @@ func _process(delta):
 		var dm = _get_dm()
 		if dm:
 			dm.hide_interact_prompt()
+	
+	if e_held and is_player_near and can_interact and not is_pushing:
+		if p.is_moving:
+			is_pushing = true
+			var dm = _get_dm()
+			if dm:
+				dm.hide_interact_prompt()
 
 func _get_dm():
 	return get_tree().get_first_node_in_group("dialogue_manager")
@@ -54,6 +65,10 @@ func _get_player():
 
 func _input(event):
 	if cooldown > 0:
+		return
+	if _dialogue_just_ended:
+		if event.is_action_pressed("interact"):
+			_dialogue_just_ended = false
 		return
 	if not is_player_near:
 		return
@@ -141,9 +156,8 @@ func _try_sleep():
 	
 	if dm:
 		var opening = [
-			{"speaker": "Cama", "text": "¿Quieres dormir? Ja ja ja..."},
-			{"speaker": "Cama", "text": "No tan rápido, caminante. No puedes simplemente acostarte."},
-			{"speaker": "Cama", "text": "Primero tienes que responder algunas preguntas..."},
+			{"speaker": "Cama", "text": "¿Quieres dormir? Ja ja ja... no tan rápido."},
+			{"speaker": "Cama", "text": "No puedes simplemente acostarte. Primero tienes que responder algunas preguntas."},
 			{"speaker": "Cama", "text": "Si respondes bien, podrás dormir. Si no... bueno, ya veremos."},
 			{"speaker": "Cama", "text": "¿Estás listo? Empecemos."}
 		]
@@ -151,10 +165,13 @@ func _try_sleep():
 		dm.dialogue_finished.connect(_on_opening_finished, CONNECT_ONE_SHOT)
 
 func _on_opening_finished():
-	cooldown = 0.5
+	cooldown = 2.0
+	_dialogue_just_ended = true
 	var p = _get_player()
 	if p:
 		p.set_can_move(true)
 	var rc = _get_rc()
 	if rc:
 		rc.start_questions()
+	await get_tree().create_timer(2.0).timeout
+	_dialogue_just_ended = false

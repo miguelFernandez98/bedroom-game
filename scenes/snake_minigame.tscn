@@ -13,13 +13,13 @@ script = ExtResource("1")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
-[node name="DrawNode" type="Node2D" parent="CanvasLayer"]
-script = ExtResource("3")
-
 [node name="Background" type="ColorRect" parent="CanvasLayer"]
 offset_right = 300.0
 offset_bottom = 340.0
 color = Color(0.125, 0.282, 0.22, 1)
+
+[node name="DrawNode" type="Node2D" parent="CanvasLayer"]
+script = ExtResource("3")
 
 [node name="TitleLabel" type="Label" parent="CanvasLayer"]
 offset_left = 20.0

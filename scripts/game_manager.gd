@@ -12,6 +12,7 @@ var negative_answers: int = 0
 var is_game_over: bool = false
 var is_victory: bool = false
 var first_snake_completed: bool = false
+var snake_attempts: int = 0
 
 func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -60,6 +61,7 @@ func reset_game():
 	is_game_over = false
 	is_victory = false
 	first_snake_completed = false
+	snake_attempts = 0
 
 func get_stress_color() -> Color:
 	if stress_level < 30:

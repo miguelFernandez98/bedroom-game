@@ -27,12 +27,22 @@ func _ready():
 	draw_node.snake_minigame = self
 
 func start_snake_game():
+	var attempts = GameManager.snake_attempts
+	if attempts == 0:
+		game_speed = 0.14
+		target_score = 8
+	elif attempts == 1:
+		game_speed = 0.20
+		target_score = 5
+	else:
+		game_speed = 0.30
+		target_score = 3
+	
 	is_active = true
 	canvas_layer.visible = true
 	score = 0
 	direction = Vector2.RIGHT
 	next_direction = Vector2.RIGHT
-	game_speed = 0.2
 	timer.wait_time = game_speed
 	
 	var start_x = grid_width / 2

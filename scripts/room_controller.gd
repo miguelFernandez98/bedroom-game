@@ -54,8 +54,8 @@ func _play_intro_dialogue():
 			player.set_override_texture(atlas)
 	if dialogue_manager:
 		var intro = [
-			{"speaker": "Jugador", "text": "Creo que ya jugué mucho... debo dormir aunque no quiera."},
-			{"speaker": "Jugador", "text": "Esa cama ahí se ve rara, pero no tengo otra opción."},
+			{"speaker": "Jugador", "text": "Creo que ya jugué mucho... debería dormir aunque no quiera."},
+			{"speaker": "Jugador", "text": "Esa cama se ve rara, pero no tengo otra opción."},
 			{"speaker": "Sistema", "text": "Acércate a la cama y presiona [E] para interactuar."}
 		]
 		dialogue_manager.start_dialogue(intro)
@@ -87,44 +87,44 @@ func _init_questions():
 	questions = [
 		{
 			"speaker": "Cama",
-			"text": "Mira, ya es tarde. Mañana tienes ese evento que tanto te preocupa.",
+			"text": "Mañana tienes ese evento. ¿Ya estás pensando en todas las cosas que pueden salir mal?",
 			"choices": [
-				{"text": "Si, estoy nervioso pero dormiré bien", "value": 2, "response": "Dormir bien? Con esa cara de preocupación? Ja."},
-				{"text": "Supongo que tengo que descansar", "value": 1, "response": "Tienes que? Que obligado suenas. Patético."},
-				{"text": "No puedo parar de pensar en ello", "value": 0, "response": "Obvio. Eres un desastre. Mirate."}
+				{"text": "Sí, pero voy a intentar dormir de todos modos", "value": 2, "response": "Intentar dormir... ¿con esa cara de preocupación? Va, al menos lo intentas."},
+				{"text": "No puedo evitar pensarlo", "value": 1, "response": "Claro, es más fácil quedarse dormido en el worry-train. Todo el mundo lo hace."},
+				{"text": "Prefiero no pensar en eso ahora", "value": 0, "response": "¿Ah sí? Pues justito eso es lo que vas a hacer toda la noche. Pensar."}
 			],
 			"positive_value": 2,
 			"negative_value": 0
 		},
 		{
 			"speaker": "Cama",
-			"text": "Sabes qué es lo peor? Que mañana vas a llegar ahí y todos van a notar que no dormiste.",
+			"text": "¿Y si mañana llegas y todos notan que no dormiste? ¿Qué cara vas a poner?",
 			"choices": [
-				{"text": "No importa lo que piensen, haré lo mejor que pueda", "value": 2, "response": "Lo mejor que puedas... no es mucho, ¿no?"},
-				{"text": "Tienes razón, voy a parecer un desastre", "value": 0, "response": "Al menos sabes la verdad. Qué vas a hacer al respecto?"},
-				{"text": "Prefiero no pensar en eso ahora", "value": 1, "response": "Claro, es más fácil ignorar las cosas. Como siempre."}
+				{"text": "La que me salga, pero haré lo mejor que pueda", "value": 2, "response": "Lo mejor que puedas... no es mucho, ¿eh? Pero bueno, algo es algo."},
+				{"text": "Tienes razón, voy a parecer un desastre", "value": 0, "response": "Al menos eres honesto. Eso no te salva, pero es algo."},
+				{"text": "No me importa lo que piensen los demás", "value": 1, "response": "Ah, el clásico 'no me importa'. Spoiler: sí te importa. Mucho."}
 			],
 			"positive_value": 2,
 			"negative_value": 0
 		},
 		{
 			"speaker": "Cama",
-			"text": "¿Y si mañana todo sale mal? ¿Qué vas a hacer entonces?",
+			"text": "Dime una cosa: ¿cuántas veces has tenido un mal-presentimiento y al final todo salió bien?",
 			"choices": [
-				{"text": "Si sale mal, aprenderé para la próxima vez", "value": 2, "response": "Aprender? Eso suena a quien no se rinde fácilmente..."},
-				{"text": "No lo sé, pero no puedo controlar todo", "value": 1, "response": "Al menos admites que no controlas nada. Eso es algo."},
-				{"text": "Sería el fin del mundo para mí", "value": 0, "response": "El fin del mundo? Exagerado. Pero eso eres tú, ¿no? Un exagerado."}
+				{"text": "Bastantes, supongo que debería recordar eso", "value": 2, "response": "¿Ves? Tu cerebro te miente. Pero tú le haces caso como si fuera un oráculo."},
+				{"text": "No lo sé, nunca presto atención a eso", "value": 1, "response": "Claro, ignorar los datos es una estrategia válida... para los toros."},
+				{"text": "Nunca, siempre sale mal", "value": 0, "response": "Siempre sale mal? Eso se llama selective thinking, caminante. Y es un veneno."}
 			],
 			"positive_value": 2,
 			"negative_value": 0
 		},
 		{
 			"speaker": "Cama",
-			"text": "Última pregunta antes de la difícil. ¿Crees que mereces un descanso después de todo lo que has pasado esta semana?",
+			"text": "Última antes de lo difícil. ¿Crees que mereces descansar, o sientes que siempre puedes dar más?",
 			"choices": [
-				{"text": "Sí, he trabajado duro y lo merezco", "value": 2, "response": "Trabajado duro? Hmm... tal vez tengas razón."},
-				{"text": "No lo sé, siento que podría haber hecho más", "value": 1, "response": "Siempre piensas que podrías hacer más. Eso te destruye."},
-				{"text": "No, siempre puedo esforzarme más", "value": 0, "response": "Siempre más, más, más. Nunca es suficiente para ti, ¿verdad?"}
+				{"text": "He trabajado duro, merezco un descanso", "value": 2, "response": "Mereces un descanso... Hmm. Tal vez tengas razón. Tal vez."},
+				{"text": "Siento que podría haber hecho más", "value": 1, "response": "Siempre 'más, más, más'. Eso no te hace/productivo, te hace agotado."},
+				{"text": "Nunca es suficiente, siempre puedo mejorar", "value": 0, "response": "¿Mejorar? O ¿autodestruirte disfrazado de.superación? Piénsalo."}
 			],
 			"positive_value": 2,
 			"negative_value": 0
@@ -155,12 +155,12 @@ func _show_final_question():
 	if dialogue_manager:
 		var dialogue = [
 			{"speaker": "Cama", "text": "Ahora viene lo difícil..."},
-			{"speaker": "Cama", "text": "Sabes cuál es la diferencia entre rendirse y descansar? A veces, lo que sientes como derrota, solo es tu cuerpo pidiendo que intentes de otra forma."},
+			{"speaker": "Cama", "text": "¿Sabes cuál es la diferencia entre rendirse y descansar? A veces, lo que sientes como derrota, solo es tu cuerpo pidiendo que intentes de otra forma."},
 			{"speaker": "Cama", "text": "No necesitas ser perfecto. Solo necesitas intentarlo. Es así de simple y así de difícil."},
 			{"speaker": "Cama", "text": "¿Entiendes que intentar ya es ganar?", "choices": [
 				{"text": "Sí, intentar ya es suficiente", "value": 3, "response": "Entonces... puedes dormir. Buenas noches, valiente."},
-				{"text": "Pero y si fallo otra vez...", "value": 1, "response": "Y si fallas? Pues lo intentas otra vez. No hay secreto. Solo hazlo."},
-				{"text": "No entiendo por qué debería intentar", "value": 0, "response": "No entiendes? Mira la pared... ya no hay donde ir."}
+				{"text": "Pero y si fallo otra vez...", "value": 1, "response": "¿Y si fallas? Pues lo intentas otra vez. No hay secreto. Solo hazlo."},
+				{"text": "No entiendo por qué debería intentar", "value": 0, "response": "¿No entiendes? Mira la pared... ya no hay donde ir."}
 			]}
 		]
 		dialogue_manager.start_dialogue(dialogue)
@@ -221,10 +221,10 @@ func _start_forced_minigame():
 			player.set_can_move(false)
 		if dialogue_manager:
 			var taunt = [
-				{"speaker": "Cama", "text": "Sabes qué? Eres demasiado correcto. Me aburres."},
-				{"speaker": "Cama", "text": "Nadie es tan perfecto. O mientes o no tienes personalidad."},
-				{"speaker": "Cama", "text": "Vamos a jugar algo más divertido. Si ganas, tal vez te deje dormir."},
-				{"speaker": "Cama", "text": "Come las manzanas sin chocar. ¡Y no me decepciones!"}
+				{"speaker": "Cama", "text": "¿Sabes qué? Eres demasiado perfecto. Me aburres."},
+				{"speaker": "Cama", "text": "Nadie es tan correcto. O mientes o no tienes personalidad."},
+				{"speaker": "Cama", "text": "Juguemos algo más interesante. Come las manzanas sin chocar."},
+				{"speaker": "Cama", "text": "Si ganas, tal vez te deje dormir. Si no... bueno, ya veremos."}
 			]
 			dialogue_manager.start_dialogue(taunt)
 			dialogue_manager.dialogue_finished.connect(_on_taunt_finished, CONNECT_ONE_SHOT)
@@ -239,9 +239,9 @@ func _start_punishment_minigame():
 			player.set_can_move(false)
 		if dialogue_manager:
 			var taunt = [
-				{"speaker": "Cama", "text": "¿No querías jugar? Bueno... ahí tienes."},
-				{"speaker": "Cama", "text": "Si no puedes responder bien, al menos demuestras que sirves para algo. Come las manzanas sin chocar."},
-				{"speaker": "Cama", "text": "Si fallas esto también... qué patético eres."}
+				{"speaker": "Cama", "text": "¿No querías jugar? Bueno, aquí tienes tu castigo."},
+				{"speaker": "Cama", "text": "Come las manzanas sin chocar. Y si no puedes... qué patético."},
+				{"speaker": "Cama", "text": "Tranquilo, si fallas esta vez la habitación se hace más pequeña. Nada personal."}
 			]
 			dialogue_manager.start_dialogue(taunt)
 			dialogue_manager.dialogue_finished.connect(_on_taunt_finished, CONNECT_ONE_SHOT)
@@ -258,6 +258,7 @@ func _on_taunt_finished():
 		snake_minigame.start_snake_game()
 
 func _on_snake_completed(success: bool):
+	GameManager.snake_attempts += 1
 	if player:
 		if player.has_method("clear_override"):
 			player.clear_override()
@@ -271,15 +272,15 @@ func _on_snake_completed(success: bool):
 	if success:
 		if dialogue_manager:
 			dialogue_manager.start_dialogue([
-				{"speaker": "Cama", "text": "¿Ganaste? Bien. Al menos sirves para algo."},
-				{"speaker": "Cama", "text": "Ahora vuelve a intentar dormir. Y esta vez, responde mejor."}
+				{"speaker": "Cama", "text": "¿Ganaste? Vale. Al menos sirves para algo."},
+				{"speaker": "Cama", "text": "Ahora vuelve a intentar dormir. Y esta vez, piensa antes de responder."}
 			])
 			dialogue_manager.dialogue_finished.connect(_on_snake_result.bind(true), CONNECT_ONE_SHOT)
 	else:
 		if dialogue_manager:
 			dialogue_manager.start_dialogue([
-				{"speaker": "Cama", "text": "¡JAJAJA! ¡Ni siquiera puedes ganar un jueguito!"},
-				{"speaker": "Cama", "text": "Mira como se cierra la habitación..."}
+				{"speaker": "Cama", "text": "¡Jajaja! Ni siquiera puedes ganar un jueguito."},
+				{"speaker": "Cama", "text": "Mira como se cierra la habitación... cada vez más pequeño, ¿no?"}
 			])
 			dialogue_manager.dialogue_finished.connect(_on_snake_result.bind(false), CONNECT_ONE_SHOT)
 
@@ -294,7 +295,7 @@ func _show_victory():
 			{"speaker": "Cama", "text": "Bueno... ganaste. Te mereces dormir."},
 			{"speaker": "Cama", "text": "Recuerda: no necesitas ser perfecto. Solo necesitas intentarlo."},
 			{"speaker": "Sistema", "text": "FELICIDADES! Has completado el juego."},
-			{"speaker": "Sistema", "text": "Moraleja: Intentar ya es ganar. No importa cuantas veces falles, lo importante es que sigas intentando."}
+			{"speaker": "Sistema", "text": "Moraleja: Intentar ya es ganar. No importa cuántas veces falles, lo importante es que sigas intentando."}
 		])
 
 func _show_hint():
@@ -312,7 +313,7 @@ func _on_hint_finished():
 func _show_game_over():
 	if dialogue_manager:
 		dialogue_manager.start_dialogue([
-			{"speaker": "Cama", "text": "¡JAJAJA! No pudiste ni responder una pregunta correctamente."},
+			{"speaker": "Cama", "text": "¡Jajaja! No pudiste ni responder una pregunta correctamente."},
 			{"speaker": "Cama", "text": "La habitación se cierra... y tú te quedas ahí, perdido en tus pensamientos."},
 			{"speaker": "Sistema", "text": "GAME OVER - Presiona R para reiniciar."},
 			{"speaker": "Sistema", "text": "A veces hay que intentar muchas veces antes de lograrlo."}
