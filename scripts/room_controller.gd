@@ -24,6 +24,7 @@ var camera: Camera2D = null
 var player: Node2D = null
 var snake_minigame: Node = null
 var hot_chair_minigame: Node = null
+var chase_minigame: Node = null
 
 @onready var wall_top: StaticBody2D = $Walls/WallTop
 @onready var wall_bottom: StaticBody2D = $Walls/WallBottom
@@ -40,6 +41,11 @@ var forced_snake_pending: bool = false
 var audio_manager: Node = null
 var minigame_after_dialogue: String = ""
 
+var games_won: int = 0
+var min_games_required: int = 2
+var apple_item: Node2D = null
+var apple_spawned: bool = false
+
 func _ready():
 	add_to_group("room_controller")
 	dialogue_manager = get_tree().get_first_node_in_group("dialogue_manager")
@@ -54,10 +60,20 @@ func _ready():
 		hot_chair_minigame = $HotChairMinigame
 		hot_chair_minigame.chair_game_completed.connect(_on_chair_completed)
 	
+	if has_node("ChaseMinigame"):
+		chase_minigame = $ChaseMinigame
+		chase_minigame.chase_completed.connect(_on_chase_completed)
+		# Connect bed's chase victory signal
+		var bed = get_tree().get_first_node_in_group("bed")
+		if bed and bed.has_signal("chase_victory"):
+			bed.chase_victory.connect(_on_bed_chase_victory)
+	
 	audio_manager = get_node_or_null("AudioManager")
 	if audio_manager:
 		audio_manager.setup($BackgroundMusic, $HUD/MuteButton, dialogue_manager)
 	
+	GameManager.hearts_changed.connect(_on_hearts_changed)
+	_update_hearts_display()
 	_save_original_positions()
 	_init_questions()
 	_change_state(GameState.INTRO)
@@ -116,11 +132,6 @@ func _play_intro_dialogue():
 func _on_intro_finished():
 	_change_state(GameState.IDLE)
 
-func _input(event):
-	if event.is_action_pressed("restart"):
-		get_tree().reload_current_scene()
-		GameManager.reset_game()
-
 func _save_original_positions():
 	original_positions = {
 		"top": wall_top.position,
@@ -156,29 +167,56 @@ func _init_questions():
 	questions = [
 		{
 			"speaker": "Cama",
-			"text": "Mañana tienes ese evento. ¿Ya estás pensando en todas las cosas que pueden salir mal?",
+			"text": "Cuéntame algo: ¿cuántas veces te has dormido pensando en algo que al día siguiente no importaba?",
+			"is_random": false,
 			"choices": [
-				{"text": "Sí, pero voy a intentar dormir de todos modos", "value": 2, "response": "Intentar dormir... ¿con esa cara de preocupación? Va, al menos lo intentas."},
-				{"text": "No puedo evitar pensarlo", "value": 1, "response": "Claro, es más fácil quedarse dormido en el worry-train. Todo el mundo lo hace."},
-				{"text": "Prefiero no pensar en eso ahora", "value": 0, "response": "¿Ah sí? Pues justito eso es lo que vas a hacer toda la noche. Pensar."}
+				{"text": "Muchas, supongo", "value": 1, "response": "¿Ves? Tu cerebro te tortura por nada."},
+				{"text": "No lo sé, nunca presto atención", "value": 0, "response": "Ignorar los datos no los hace desaparecer."},
+				{"text": "Siempre me importa todo", "value": 2, "response": "Todo no puede importar. Eso se llama ansiedad, no dedicación."}
 			],
-			"positive_value": 2,
+			"positive_value": 1,
 			"negative_value": 0
 		},
 		{
 			"speaker": "Cama",
-			"text": "¿Y si mañana llegas y todos notan que no dormiste? ¿Qué cara vas a poner?",
+			"text": "¿Cuántos lados tiene un triángulo?",
+			"is_random": true,
 			"choices": [
-				{"text": "La que me salga, pero haré lo mejor que pueda", "value": 2, "response": "Lo mejor que puedas... no es mucho, ¿eh? Pero bueno, algo es algo."},
-				{"text": "Tienes razón, voy a parecer un desastre", "value": 0, "response": "Al menos eres honesto. Eso no te salva, pero es algo."},
-				{"text": "No me importa lo que piensen los demás", "value": 1, "response": "Ah, el clásico 'no me importa'. Spoiler: sí te importa. Mucho."}
+				{"text": "3", "value": 1, "response": "Correcto. Pero eso no te hace listo."},
+				{"text": "4", "value": 0, "response": "Incorrecto. ¿En serio?"},
+				{"text": "No lo sé", "value": 0, "response": "Patético. Es trigonometría básica."}
 			],
-			"positive_value": 2,
+			"positive_value": 1,
+			"negative_value": 0
+		},
+		{
+			"speaker": "Cama",
+			"text": "Si tuvieras que elegir entre no dormir nunca o no comer nunca, ¿qué elegirías?",
+			"is_random": false,
+			"choices": [
+				{"text": "No dormir, al menos aprovecho el tiempo", "value": 0, "response": "¿En serio? Sin dormir enloqueces en 3 días."},
+				{"text": "No comer, puedo aguantar más", "value": 1, "response": "Hmm, médicamente cuestionable, pero al menos piensas."},
+				{"text": "No lo sé, ambas suenan terribles", "value": 2, "response": "Al menos eres honesto con tu ignorancia."}
+			],
+			"positive_value": 1,
+			"negative_value": 0
+		},
+		{
+			"speaker": "Cama",
+			"text": "¿Cuánto es 7 × 8?",
+			"is_random": true,
+			"choices": [
+				{"text": "56", "value": 1, "response": "Aunque sea sabes multiplicar."},
+				{"text": "54", "value": 0, "response": "Casi. Casi no cuenta."},
+				{"text": "No sé multiplicar", "value": 0, "response": "Qué nivel de confianza para alguien que no sabe multiplicar."}
+			],
+			"positive_value": 1,
 			"negative_value": 0
 		},
 		{
 			"speaker": "Cama",
 			"text": "Dime una cosa: ¿cuántas veces has tenido un mal-presentimiento y al final todo salió bien?",
+			"is_random": false,
 			"choices": [
 				{"text": "Bastantes, supongo que debería recordar eso", "value": 2, "response": "¿Ves? Tu cerebro te miente. Pero tú le haces caso como si fuera un oráculo."},
 				{"text": "No lo sé, nunca presto atención a eso", "value": 1, "response": "Claro, ignorar los datos es una estrategia válida... para los toros."},
@@ -189,13 +227,38 @@ func _init_questions():
 		},
 		{
 			"speaker": "Cama",
-			"text": "Última antes de lo difícil. ¿Crees que mereces descansar, o sientes que siempre puedes dar más?",
+			"text": "¿Cuál es la capital de Francia?",
+			"is_random": true,
+			"choices": [
+				{"text": "París", "value": 1, "response": "Bien, al menos eso sabes."},
+				{"text": "Lyon", "value": 0, "response": "Lyon es bonita, pero no es la capital."},
+				{"text": "No tengo idea", "value": 0, "response": "Viaja un poco, seriously."}
+			],
+			"positive_value": 1,
+			"negative_value": 0
+		},
+		{
+			"speaker": "Cama",
+			"text": "¿Crees que mereces descansar, o sientes que siempre puedes dar más?",
+			"is_random": false,
 			"choices": [
 				{"text": "He trabajado duro, merezco un descanso", "value": 2, "response": "Mereces un descanso... Hmm. Tal vez tengas razón. Tal vez."},
 				{"text": "Siento que podría haber hecho más", "value": 1, "response": "Siempre 'más, más, más'. Eso no te hace productivo, te hace agotado."},
 				{"text": "Nunca es suficiente, siempre puedo mejorar", "value": 0, "response": "¿Mejorar? O ¿autodestruirte disfrazado de superación? Piénsalo."}
 			],
 			"positive_value": 2,
+			"negative_value": 0
+		},
+		{
+			"speaker": "Cama",
+			"text": "¿Cuántos continentes hay en la Tierra?",
+			"is_random": true,
+			"choices": [
+				{"text": "7", "value": 1, "response": "Impresionante, sabes geografía básica."},
+				{"text": "5", "value": 0, "response": "Cinco... ¿te olvidaste de dos?"},
+				{"text": "No sé, no me importa", "value": 0, "response": "La ignorancia no es virtue, friend."}
+			],
+			"positive_value": 1,
 			"negative_value": 0
 		}
 	]
@@ -234,8 +297,29 @@ func _on_answer_selected(value: int, q: Dictionary):
 	var correct = value >= q["positive_value"]
 	
 	if correct:
-		consecutive_positive += 1
-		GameManager.add_positive_answer()
+		if not q.get("is_random", false):
+			# Real question answered correctly
+			if games_won < min_games_required:
+				# Not enough games won yet — force minigame with mocking
+				pending_minigame = true
+				consecutive_positive = 0
+				question_answered.emit(false)
+				current_question_index += 1
+				if dialogue_manager:
+					dialogue_manager.dialogue_finished.connect(_on_mocking_dialogue_closed, CONNECT_ONE_SHOT)
+				return
+			else:
+				consecutive_positive += 1
+				GameManager.add_positive_answer()
+				# Chance to spawn apple after correct random question
+				if q.get("is_random", false) and not apple_spawned:
+					_spawn_apple()
+		else:
+			# Random question — always counts, chance for apple
+			consecutive_positive += 1
+			GameManager.add_positive_answer()
+			if not apple_spawned and randf() < 0.4:
+				_spawn_apple()
 	else:
 		consecutive_positive = 0
 		GameManager.add_negative_answer()
@@ -250,6 +334,15 @@ func _on_answer_selected(value: int, q: Dictionary):
 	current_question_index += 1
 	
 	if dialogue_manager:
+		dialogue_manager.dialogue_finished.connect(_on_question_dialogue_closed, CONNECT_ONE_SHOT)
+
+func _on_mocking_dialogue_closed():
+	if dialogue_manager:
+		dialogue_manager.start_dialogue([
+			{"speaker": "Cama", "text": "¿Ah sí? No pareces muy convencido."},
+			{"speaker": "Cama", "text": "Demuéstralo jugando. Si ganas, tal vez te crea."},
+			{"speaker": "Cama", "text": "Si no... bueno, ya sabes qué pasa."}
+		])
 		dialogue_manager.dialogue_finished.connect(_on_question_dialogue_closed, CONNECT_ONE_SHOT)
 
 func _on_final_answer_selected(value: int):
@@ -337,6 +430,7 @@ func _on_snake_completed(success: bool):
 		if dialogue_manager.dialogue_finished.is_connected(_on_snake_result):
 			dialogue_manager.dialogue_finished.disconnect(_on_snake_result)
 	if success:
+		games_won += 1
 		if dialogue_manager:
 			dialogue_manager.start_dialogue([
 				{"speaker": "Cama", "text": "¿Ganaste? Vale. Al menos sirves para algo."},
@@ -394,6 +488,7 @@ func _on_chair_completed(success: bool):
 		if dialogue_manager.dialogue_finished.is_connected(_on_chair_result):
 			dialogue_manager.dialogue_finished.disconnect(_on_chair_result)
 	if success:
+		games_won += 1
 		if dialogue_manager:
 			dialogue_manager.start_dialogue([
 				{"speaker": "Cama", "text": "¿Ganaste al clon? No está mal..."},
@@ -418,20 +513,21 @@ func _start_chase_sequence():
 		player.set_can_move(false)
 	if dialogue_manager:
 		dialogue_manager.start_dialogue([
-			{"speaker": "Cama", "text": "¿Recuerdas la serpiente? Ahora viene lo realmente malo."},
-			{"speaker": "Cama", "text": "La serpiente ya no quiere manzanas. Quiere TÍ."},
-			{"speaker": "Cama", "text": "Espera... si logras empujar la cama por la ventana, tal vez puedas escapar."},
-			{"speaker": "Cama", "text": "¡Corre!"}
+			{"speaker": "Cama", "text": "Tu peor enemigo eres tú mismo."},
+			{"speaker": "Cama", "text": "Mira... ahí viene. Es tú, pero no eres tú."},
+			{"speaker": "Cama", "text": "Si te alcanza, todo termina."},
+			{"speaker": "Cama", "text": "Pero si logras empujar la cama por la ventana... tal vez puedas escapar."},
+			{"speaker": "Cama", "text": "¿Listo? ¡Corre!"}
 		])
 		dialogue_manager.dialogue_finished.connect(_on_chase_taunt_finished, CONNECT_ONE_SHOT)
 
 func _on_chase_taunt_finished():
-	if snake_minigame and snake_minigame.has_method("start_chase_mode"):
+	if chase_minigame and chase_minigame.has_method("start_chase"):
 		var bed = get_tree().get_first_node_in_group("bed")
 		if bed:
 			bed.push_enabled = true
-			bed.can_interact = true
-		snake_minigame.start_chase_mode()
+			bed.can_interact = false
+		chase_minigame.start_chase()
 		if player:
 			player.set_can_move(true)
 	else:
@@ -449,14 +545,33 @@ func _on_chase_completed(success: bool):
 	else:
 		_change_state(GameState.GAME_OVER)
 
+func _on_bed_chase_victory():
+	if chase_minigame and chase_minigame.has_method("end_game"):
+		chase_minigame.end_game(true)
+
 func _show_victory():
+	if player:
+		player.set_can_move(false)
+		if player.has_method("set_override_texture"):
+			# Show lying down sprite
+			var atlas = AtlasTexture.new()
+			atlas.atlas = load("res://assets/sprites/player.png")
+			atlas.region = Rect2(80, 0, 16, 32)
+			player.set_override_texture(atlas)
 	if dialogue_manager:
 		dialogue_manager.start_dialogue([
 			{"speaker": "Cama", "text": "Bueno... ganaste. Te mereces dormir."},
 			{"speaker": "Cama", "text": "Recuerda: no necesitas ser perfecto. Solo necesitas intentarlo."},
+			{"speaker": "Sistema", "text": "El jugador se acuesta en la cama y cierra los ojos..."},
+			{"speaker": "Sistema", "text": "Todo había sido una pesadilla."},
 			{"speaker": "Sistema", "text": "FELICIDADES! Has completado el juego."},
 			{"speaker": "Sistema", "text": "Moraleja: Intentar ya es ganar. No importa cuántas veces falles, lo importante es que sigas intentando."}
 		])
+		dialogue_manager.dialogue_finished.connect(_on_victory_finished, CONNECT_ONE_SHOT)
+
+func _on_victory_finished():
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+	GameManager.reset_game()
 
 func _show_hint():
 	if dialogue_manager:
@@ -471,13 +586,18 @@ func _on_hint_finished():
 	_show_final_question()
 
 func _show_game_over():
+	if player:
+		player.set_can_move(false)
 	if dialogue_manager:
 		dialogue_manager.start_dialogue([
 			{"speaker": "Cama", "text": "¡Jajaja! No pudiste ni responder una pregunta correctamente."},
 			{"speaker": "Cama", "text": "La habitación se cierra... y tú te quedas ahí, perdido en tus pensamientos."},
-			{"speaker": "Sistema", "text": "GAME OVER - Presiona R para reiniciar."},
-			{"speaker": "Sistema", "text": "A veces hay que intentar muchas veces antes de lograrlo."}
+			{"speaker": "Sistema", "text": "GAME OVER"}
 		])
+		dialogue_manager.dialogue_finished.connect(_on_game_over_finished, CONNECT_ONE_SHOT)
+
+func _on_game_over_finished():
+	get_tree().change_scene_to_file("res://scenes/game_over.tscn")
 
 func _shrink_room():
 	current_shrink = mini(current_shrink + 1, max_shrink)
@@ -486,6 +606,7 @@ func _shrink_room():
 	wall_bottom.position.y = original_positions["bottom"].y - offset
 	wall_left.position.x = original_positions["left"].x + offset
 	wall_right.position.x = original_positions["right"].x - offset
+	GameManager.lose_heart()
 
 func get_bed_random_position() -> Vector2:
 	var min_x = original_positions["left"].x + 48
@@ -493,3 +614,34 @@ func get_bed_random_position() -> Vector2:
 	var min_y = original_positions["top"].y + 48
 	var max_y = original_positions["bottom"].y - 48
 	return Vector2(randf_range(min_x, max_x), randf_range(min_y, max_y))
+
+func _on_hearts_changed(new_hearts: int):
+	_update_hearts_display()
+
+func _update_hearts_display():
+	var hearts_label = get_node_or_null("HUD/HeartsLabel")
+	if hearts_label:
+		var hearts_text = ""
+		for i in range(GameManager.max_hearts):
+			if i < GameManager.hearts:
+				hearts_text += "♥ "
+			else:
+				hearts_text += "♡ "
+		hearts_label.text = hearts_text.strip_edges()
+
+func _spawn_apple():
+	if apple_spawned:
+		return
+	apple_spawned = true
+	var PackedApple = load("res://scenes/apple_item.tscn")
+	if PackedApple:
+		apple_item = PackedApple.instantiate()
+		add_child(apple_item)
+		var pos = get_bed_random_position()
+		apple_item.position = pos
+		if apple_item.has_signal("apple_collected"):
+			apple_item.apple_collected.connect(_on_apple_collected)
+
+func _on_apple_collected():
+	apple_spawned = false
+	apple_item = null

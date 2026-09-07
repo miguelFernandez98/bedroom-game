@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://gameroom001"]
+[gd_scene load_steps=13 format=3 uid="uid://gameroom001"]
 
 [ext_resource type="Script" path="res://scripts/room_controller.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/bed.gd" id="2"]
@@ -10,6 +10,7 @@
 [ext_resource type="Script" path="res://scripts/window.gd" id="8"]
 [ext_resource type="Script" path="res://scripts/audio_manager.gd" id="9"]
 [ext_resource type="PackedScene" uid="uid://chair001" path="res://scenes/hot_chair_minigame.tscn" id="10"]
+[ext_resource type="PackedScene" uid="uid://chase001" path="res://scenes/chase_minigame.tscn" id="11"]
 
 [sub_resource type="AtlasTexture" id="bed_closed"]
 atlas = ExtResource("7")
@@ -32,13 +33,13 @@ size = Vector2(32, 432)
 size = Vector2(32, 432)
 
 [sub_resource type="RectangleShape2D" id="bed_solid_shape"]
-size = Vector2(48, 32)
+size = Vector2(48, 96)
 
 [sub_resource type="RectangleShape2D" id="player_shape"]
 size = Vector2(10, 10)
 
 [sub_resource type="RectangleShape2D" id="bed_detect_shape"]
-size = Vector2(120, 180)
+size = Vector2(60, 40)
 
 [sub_resource type="AtlasTexture" id="atlas_sitting"]
 atlas = ExtResource("7")
@@ -119,6 +120,7 @@ autostart = true
 position = Vector2(240, 140)
 collision_layer = 0
 collision_mask = 1
+z_index = 5
 script = ExtResource("2")
 
 [node name="BedSprite" type="Sprite2D" parent="BedArea"]
@@ -132,6 +134,7 @@ shape = SubResource("bed_detect_shape")
 position = Vector2(240, 140)
 collision_layer = 2
 collision_mask = 0
+z_index = 5
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="BedSolid"]
 shape = SubResource("bed_solid_shape")
@@ -177,6 +180,7 @@ shape = SubResource("wall_shape_right")
 position = Vector2(240, 220)
 collision_layer = 1
 collision_mask = 2
+z_index = 10
 script = ExtResource("3")
 
 [node name="Sprite2D" type="AnimatedSprite2D" parent="Player"]
@@ -195,31 +199,17 @@ shape = SubResource("player_shape")
 
 [node name="HUD" type="CanvasLayer" parent="."]
 
-[node name="StressLabel" type="Label" parent="HUD"]
+[node name="HeartsLabel" type="Label" parent="HUD"]
 offset_left = 40.0
 offset_top = 36.0
 offset_right = 200.0
 offset_bottom = 52.0
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 16
 theme_override_colors/font_color = Color(0.878, 0.878, 0.776, 1)
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
 theme_override_constants/shadow_offset_x = 1
 theme_override_constants/shadow_offset_y = 1
-text = "Estrés: 0%"
-
-[node name="PressR" type="Label" parent="HUD"]
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -140.0
-offset_top = 36.0
-offset_right = -40.0
-offset_bottom = 52.0
-grow_horizontal = 0
-theme_override_font_sizes/font_size = 10
-theme_override_colors/font_color = Color(0.878, 0.878, 0.776, 0.7)
-text = "R = Reiniciar"
-horizontal_alignment = 2
+text = "♥ ♥ ♥"
 
 [node name="MuteButton" type="Button" parent="HUD"]
 offset_left = 420.0
@@ -237,6 +227,81 @@ bus = "Master"
 [node name="SnakeMinigame" parent="." instance=ExtResource("5")]
 
 [node name="HotChairMinigame" parent="." instance=ExtResource("10")]
+
+[node name="ChaseMinigame" parent="." instance=ExtResource("11")]
+
+[node name="Decorations" type="Node2D" parent="."]
+z_index = -1
+
+[node name="Rug" type="ColorRect" parent="Decorations"]
+offset_left = 160.0
+offset_top = 280.0
+offset_right = 320.0
+offset_bottom = 360.0
+color = Color(0.45, 0.22, 0.22, 0.6)
+
+[node name="LampBase" type="ColorRect" parent="Decorations"]
+offset_left = 40.0
+offset_top = 60.0
+offset_right = 56.0
+offset_bottom = 80.0
+color = Color(0.35, 0.25, 0.15, 1)
+
+[node name="LampShade" type="ColorRect" parent="Decorations"]
+offset_left = 34.0
+offset_top = 44.0
+offset_right = 62.0
+offset_bottom = 64.0
+color = Color(0.85, 0.75, 0.4, 0.8)
+
+[node name="LampLight" type="ColorRect" parent="Decorations"]
+offset_left = 36.0
+offset_top = 64.0
+offset_right = 60.0
+offset_bottom = 100.0
+color = Color(0.9, 0.85, 0.5, 0.15)
+
+[node name="Plant" type="ColorRect" parent="Decorations"]
+offset_left = 420.0
+offset_top = 340.0
+offset_right = 444.0
+offset_bottom = 370.0
+color = Color(0.2, 0.5, 0.2, 1)
+
+[node name="PlantPot" type="ColorRect" parent="Decorations"]
+offset_left = 422.0
+offset_top = 365.0
+offset_right = 442.0
+offset_bottom = 380.0
+color = Color(0.45, 0.3, 0.2, 1)
+
+[node name="Bookshelf" type="ColorRect" parent="Decorations"]
+offset_left = 36.0
+offset_top = 300.0
+offset_right = 60.0
+offset_bottom = 380.0
+color = Color(0.35, 0.22, 0.12, 1)
+
+[node name="Book1" type="ColorRect" parent="Decorations"]
+offset_left = 38.0
+offset_top = 305.0
+offset_right = 44.0
+offset_bottom = 325.0
+color = Color(0.7, 0.2, 0.2, 1)
+
+[node name="Book2" type="ColorRect" parent="Decorations"]
+offset_left = 46.0
+offset_top = 308.0
+offset_right = 52.0
+offset_bottom = 328.0
+color = Color(0.2, 0.3, 0.7, 1)
+
+[node name="Book3" type="ColorRect" parent="Decorations"]
+offset_left = 38.0
+offset_top = 330.0
+offset_right = 55.0
+offset_bottom = 350.0
+color = Color(0.2, 0.6, 0.3, 1)
 
 [node name="AudioManager" type="Node" parent="."]
 script = ExtResource("9")

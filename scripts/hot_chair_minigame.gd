@@ -52,9 +52,6 @@ func _start_round():
 		player_node.set_can_move(false)
 		if player_node.has_method("clear_override"):
 			player_node.clear_override()
-		player_node.position = Vector2(240, 350)
-		await get_tree().create_timer(0.5).timeout
-		player_node.set_can_move(true)
 	
 	var bed_pos = _get_random_bed_position()
 	if bed_node:
@@ -64,7 +61,16 @@ func _start_round():
 		if bed_node.bed_solid:
 			bed_node.bed_solid.position = bed_pos
 	
-	clone_node.position = Vector2(240, 16)
+	# Position player and clone equidistant from bed, on opposite sides
+	var angle = randf() * TAU
+	var dist = 120.0
+	var offset = Vector2(cos(angle), sin(angle)) * dist
+	if player_node:
+		player_node.position = bed_pos + offset
+		await get_tree().create_timer(0.3).timeout
+		player_node.set_can_move(true)
+	
+	clone_node.position = bed_pos - offset
 	clone_node.visible = true
 	clone_target = bed_pos
 	

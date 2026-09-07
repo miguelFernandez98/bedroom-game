@@ -70,17 +70,18 @@ func start_chase_mode():
 	game_speed = chase_speed
 	timer.wait_time = game_speed
 	
-	var start_x = 2
-	var start_y = 2
+	# Start from window area (top center, entering the room)
+	var start_x = grid_width / 2
+	var start_y = -2
 	snake_body = [
 		Vector2(start_x, start_y),
-		Vector2(start_x - 1, start_y),
-		Vector2(start_x - 2, start_y),
-		Vector2(start_x - 3, start_y),
-		Vector2(start_x - 4, start_y)
+		Vector2(start_x, start_y - 1),
+		Vector2(start_x, start_y - 2),
+		Vector2(start_x, start_y - 3),
+		Vector2(start_x, start_y - 4)
 	]
 	
-	score_label.text = "¡La serpiente te persigue! Escapa!"
+	score_label.text = "¡La serpiente sale de la ventana! ¡Escapa!"
 	timer.start()
 	draw_node.queue_redraw()
 
@@ -149,21 +150,25 @@ func _chase_tick():
 	
 	var head = snake_body[0] + direction
 	
+	# Clamp x to grid, but allow y to start negative (entering from window)
 	head.x = clampi(int(head.x), 0, grid_width - 1)
-	head.y = clampi(int(head.y), 0, grid_height - 1)
+	if head.y >= 0:
+		head.y = clampi(int(head.y), 0, grid_height - 1)
 	
 	for i in range(1, snake_body.size()):
 		if head == snake_body[i]:
 			_end_game(false)
 			return
 	
-	var player_grid = Vector2(
-		floori(chase_target.position.x / grid_size),
-		floori(chase_target.position.y / grid_size)
-	)
-	if head.distance_to(player_grid) < 1.5:
-		_end_game(false)
-		return
+	# Only check collision with player if snake is inside the room
+	if head.y >= 0:
+		var player_grid = Vector2(
+			floori(chase_target.position.x / grid_size),
+			floori(chase_target.position.y / grid_size)
+		)
+		if head.distance_to(player_grid) < 1.5:
+			_end_game(false)
+			return
 	
 	snake_body.insert(0, head)
 	snake_body.pop_back()

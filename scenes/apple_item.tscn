@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://pple001"]
+
+[ext_resource type="Script" path="res://scripts/apple_item.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/sprites/player.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="atlas_apple"]
+atlas = ExtResource("2")
+region = Rect2(112, 32, 16, 16)
+
+[sub_resource type="CircleShape2D" id="apple_shape"]
+radius = 20.0
+
+[node name="AppleItem" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(2, 2)
+texture = SubResource("atlas_apple")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("apple_shape")
